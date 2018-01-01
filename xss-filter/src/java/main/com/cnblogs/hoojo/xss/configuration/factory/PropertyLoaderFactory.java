@@ -12,6 +12,7 @@ import com.cnblogs.hoojo.xss.configuration.loader.xml.XmlPropertyLoader;
 
 /**
  * 配置文件工厂类
+ * 
  * @author hoojo
  * @createDate 2018年1月12日 上午11:07:04
  * @file PropertyLoaderFactory.java
