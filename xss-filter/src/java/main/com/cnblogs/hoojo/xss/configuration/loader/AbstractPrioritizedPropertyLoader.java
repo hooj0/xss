@@ -8,7 +8,6 @@ import java.util.Properties;
 
 /**
  * 优先加载配置抽象类
- * 
  * @author hoojo
  * @createDate 2018年1月12日 上午10:14:18
  * @file AbstractPrioritizedPropertyLoader.java
