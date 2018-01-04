@@ -21,7 +21,6 @@ import com.cnblogs.hoojo.xss.configuration.loader.AbstractPrioritizedPropertyLoa
 
 /**
  * xml 配置文件加载器
- * 
  * @author hoojo
  * @createDate 2018年1月12日 上午10:51:21
  * @file XmlPropertyLoader.java
