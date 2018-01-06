@@ -13,7 +13,6 @@ import com.cnblogs.hoojo.xss.configuration.manager.PropertyManager;
 
 /**
  * 默认配置文件
- * 
  * @author hoojo
  * @createDate 2018年1月12日 下午3:44:15
  * @file PropertyConfiguration.java
