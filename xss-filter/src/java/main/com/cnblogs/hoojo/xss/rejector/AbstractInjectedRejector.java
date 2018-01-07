@@ -4,6 +4,7 @@ import com.cnblogs.hoojo.xss.log.ApplicationLogging;
 
 /**
  * 剔除http请求注入的敏感信息数据：sql关键字、js关键字、html关键字、css关键字
+ * 
  * @author hoojo
  * @createDate 2018年1月17日 下午4:30:42
  * @file AbstractInjectedRejector.java
