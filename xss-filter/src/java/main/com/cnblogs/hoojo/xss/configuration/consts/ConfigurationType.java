@@ -2,6 +2,7 @@ package com.cnblogs.hoojo.xss.configuration.consts;
 
 /**
  * 配置文件类型
+ * 
  * @author hoojo
  * @createDate 2018年1月12日 上午11:19:44
  * @file ConfigurationType.java
