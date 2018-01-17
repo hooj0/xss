@@ -13,7 +13,8 @@ import com.google.common.collect.Maps;
 import com.google.common.collect.Ordering;
 
 /**
- * 放注入工具类
+ * 防止注入工具类
+ * 
  * @author hoojo
  * @createDate 2018年1月18日 下午5:45:24
  * @file InjectedRejectorManager.java
