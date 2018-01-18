@@ -15,6 +15,7 @@ import org.apache.commons.fileupload.FileItem;
 
 /**
  * Wrapper for a file upload request (before Servlet 3.0).
+ * 
  * <P>
  * This class uses the Apache Commons <a href='http://commons.apache.org/fileupload/'>File Upload tool</a>. The generous
  * Apache License will very likely allow you to use it in your applications as well.
