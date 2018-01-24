@@ -1,0 +1,26 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<root>
+	<filter-excludes>
+		<!-- 排除过滤URL或param参数 -->
+		<!-- url 代表排除拦截过滤URL -->
+		<!-- filter 代表拦截过滤的方式：js,sql,html,css -->
+		<!-- exclude-param 过滤白名单：代表拦截过滤接口不过滤的字符串参数 -->
+		<!-- include-param 过滤黑名单：代表拦截过滤接口过滤的字符串参数 -->
+		
+		
+		<!-- 对当前url的参数userName、password过滤js,sql,html,css 操作 -->
+		<exclude url="masget/pay/weixin.do" filter="js,sql,html,css">
+			<exclude-param>userName</exclude-param>
+			<exclude-param>password</exclude-param>
+			<include-param>remark</include-param>
+		</exclude>
+		
+		<!-- 对当前url过滤js,sql,html 操作 -->
+		<exclude url="masget/pay/alipay.do" filter="js,sql,html"/>
+		
+		<!-- 直接放行指定url -->
+		<exclude url="masget/pay/unionpay.do" />
+		
+		<exclude url="masget/pay/alipay_upload.do" filter="js,sql,html" check-size="true" check-type=""/>
+	</filter-excludes>
+</root>
