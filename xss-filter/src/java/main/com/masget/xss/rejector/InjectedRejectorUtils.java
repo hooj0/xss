@@ -47,6 +47,11 @@ public abstract class InjectedRejectorUtils {
 	 * @throws Exception
 	 */
 	public static String invokeAll(String targetURL, String name, String value) throws Exception {
+		if (value == null) {
+			return null;
+		}
+		logger.debug("XSS处理URL：{}，参数：{}，参数值：{}", new Object[] { targetURL, name, value });
+
 		
 		List<String> defaultFilters = PropertyConfiguration.getInstance().getProp(DEFAULT_FILTER_CONFIG_KEY, getFilters());
 		
@@ -62,13 +67,16 @@ public abstract class InjectedRejectorUtils {
 		// 2、filter为空、exclude不为空，表示该url的exclude中的参数不被过滤处理（所有filter都处理）
 		// 3、filter为空、include不为空，表示该url的include中的参数被处理过滤（所有filter都处理）
 		// 4、filter不为空，表示该url只处理filter中的过滤
-		if (emptyFilters && emptyExcludes && emptyIncludes) {
+		if (FilterConfiguration.getInstance().getMapProp(targetURL) == null) {
+			filters = defaultFilters;
+		} else if (filters.isEmpty() && excludes.isEmpty() && includes.isEmpty()) {
 			// 该URL位于白名单，忽略处理
 			return value;
 		} else if (emptyFilters) {
 			filters = defaultFilters;
 		}
 		
+		logger.warn("目标URL：{} 配置的filter：{}", targetURL, filters);
 		for (String filter : filters) {
 			
 			AbstractInjectedRejector rejector = rejectores.get(filter);
@@ -77,7 +85,7 @@ public abstract class InjectedRejectorUtils {
 					value = rejector.doRejector(value);
 				} else if (excludes.contains(name)) {
 					// 不过滤不处理
-				} else if (includes.contains(name)) {
+				} else {
 					value = rejector.doRejector(value);
 				}
 			} else {
@@ -85,6 +93,7 @@ public abstract class InjectedRejectorUtils {
 			}
 		} 
 		
+		logger.debug("XSS处理URL：{}，参数：{}，返回参数值：{}", new Object[] { targetURL, name, value });
 		return value;
 	}
 	

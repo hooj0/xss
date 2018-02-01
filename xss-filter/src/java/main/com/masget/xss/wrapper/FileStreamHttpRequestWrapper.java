@@ -1,5 +1,6 @@
-package com.masget.xss;
+package com.masget.xss.wrapper;
 
+import java.io.BufferedInputStream;
 import java.io.BufferedOutputStream;
 import java.io.ByteArrayOutputStream;
 import java.io.File;
@@ -8,8 +9,6 @@ import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.UnsupportedEncodingException;
-import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.UUID;
@@ -17,20 +16,21 @@ import java.util.UUID;
 import javax.servlet.ServletInputStream;
 import javax.servlet.http.HttpServletRequest;
 
-import org.apache.commons.fileupload.FileItem;
+import org.apache.commons.fileupload.FileItemIterator;
+import org.apache.commons.fileupload.FileItemStream;
+import org.apache.commons.fileupload.FileUploadException;
 import org.apache.commons.fileupload.ParameterParser;
-import org.apache.commons.fileupload.ProgressListener;
-import org.apache.commons.fileupload.disk.DiskFileItemFactory;
 import org.apache.commons.fileupload.servlet.ServletFileUpload;
+import org.apache.commons.fileupload.util.Streams;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import com.google.common.base.CharMatcher;
 import com.google.common.base.Splitter;
+import com.masget.xss.TextHttpRequestWrapper;
 import com.masget.xss.configuration.FilterConfiguration;
 import com.masget.xss.configuration.PropertyConfiguration;
 import com.masget.xss.rejector.InjectedRejectorUtils;
-import com.masget.xss.wrapper.FileServletInputStream;
 
 /**
  * <b>function:</b> 文件上传过滤
@@ -44,21 +44,15 @@ import com.masget.xss.wrapper.FileServletInputStream;
  * @email hoojo_@126.com
  * @version 1.0
  */
-public class FileHttpRequestWrapper extends TextHttpRequestWrapper {
+public class FileStreamHttpRequestWrapper extends TextHttpRequestWrapper {
 
-	private static final Logger logger = LoggerFactory.getLogger(FileHttpRequestWrapper.class);
+	private static final Logger logger = LoggerFactory.getLogger(FileStreamHttpRequestWrapper.class);
 	
-	private static final byte CR = '\r';
-	private static final byte LF = '\n';
+	private static final byte CR = 13;
+	private static final byte LF = 10;
 	
 	private static final byte[] HEADER_SEPARATOR = { CR, LF, CR, LF };
 	private static final byte[] FIELD_SEPARATOR = { CR, LF };
-	
-	private static final String CHARSET_PROP_KEY = "file.charset";
-	private static final String MAX_FILE_SIZE_PROP_KEY = "file.max.size";
-	private static final String LIMIT_FILE_TYPE_PROP_KEY = "file.limit.type";
-	private static final String ALLOWED_TYPE_PROP_KEY = "file.allowed.type";
-	
 	/** 过滤的文件类型 contentType */
 	private static final String LIMIT_FILE_TYPE = "application/octet-stream";
 	/** 允许上传的文件后缀 */
@@ -70,67 +64,76 @@ public class FileHttpRequestWrapper extends TextHttpRequestWrapper {
 	private Long maxFileSize = MB * 50; //50M
 	private String charset = "UTF-8";
 	
-	private Map<String, FileItem> escapedParametersFileItemsMap = new HashMap<>();
 	private List<String> contentTypes;
 	private List<String> allowedTypes;
 	
-	private HttpServletRequest request;
+	private byte[] isBytes;
 	private File tmpFile;
 	private String url;
 	
-	public FileHttpRequestWrapper(HttpServletRequest request) throws Exception {
+	public FileStreamHttpRequestWrapper(HttpServletRequest request) throws Exception {
 		super(request);
-		
-		this.request = request;
 		this.url = request.getRequestURI();
 		
 		try {
-			this.charset = PropertyConfiguration.getInstance().getProp(CHARSET_PROP_KEY, charset);
-			this.maxFileSize = Long.valueOf(PropertyConfiguration.getInstance().getProp(MAX_FILE_SIZE_PROP_KEY, String.valueOf(maxFileSize)));
-			this.contentTypes = SPLITTER.splitToList(PropertyConfiguration.getInstance().getProp(LIMIT_FILE_TYPE_PROP_KEY, LIMIT_FILE_TYPE).toLowerCase());
-			this.allowedTypes = SPLITTER.splitToList(PropertyConfiguration.getInstance().getProp(ALLOWED_TYPE_PROP_KEY, ALLOWED_TYPE).toLowerCase());
+			this.maxFileSize = Long.valueOf(PropertyConfiguration.getInstance().getProp("file.max.size", String.valueOf(maxFileSize)));
+			this.contentTypes = SPLITTER.splitToList(PropertyConfiguration.getInstance().getProp("file.limit.type", LIMIT_FILE_TYPE).toLowerCase());
+			this.allowedTypes = SPLITTER.splitToList(PropertyConfiguration.getInstance().getProp("file.allowed.type", ALLOWED_TYPE).toLowerCase());
+			this.charset = PropertyConfiguration.getInstance().getProp("file.charset", charset);
 			
-			DiskFileItemFactory factory = new DiskFileItemFactory();
-			ServletFileUpload fileUpload = new ServletFileUpload(factory);
+			this.isBytes = readInputStreamBytes(request.getInputStream());
 			
-			//Create a progress listener
-			ProgressListener progressListener = new ProgressListener() {
-				private long megaBytes = -1;
-
-				public void update(long pBytesRead, long pContentLength, int pItems) {
-					long mBytes = pBytesRead / 1000000;
-					if (megaBytes == mBytes) {
-						return;
-					}
-					megaBytes = mBytes;
-					if (pContentLength == -1) {
-						logger.debug("So far, " + pBytesRead / 1024.0 / 1024.0 + " have been read.");
-					} else {
-						logger.debug("So far, " + pBytesRead / 1024.0 / 1024.0 + "\tof " + pContentLength / 1024.0 / 1024.0);
-					}
-				}
-			};
-			fileUpload.setProgressListener(progressListener);
-
-			List<FileItem> list = fileUpload.parseRequest(request);
-			if (list != null && !list.isEmpty()) {
-				transformTmpFile(list);
-			}
+			// 创建ServletFileUpload实例
+			ServletFileUpload fileUpload = new ServletFileUpload();
+			// 解析request请求 返回FileItemStream的iterator实例
+			FileItemIterator iter = fileUpload.getItemIterator(this);
+			
+			transformTmpFile(iter);
+			
+		} catch (IOException e) {
+			logger.error("Failed to read multipart stream.", e);
+			throw e;
+		} catch (FileUploadException e) {
+			logger.error("Failed to read multipart stream.", e);
+			throw e;
 		} catch (Exception e) {
 			logger.error("Failed to read multipart stream.", e);
 			throw e;
 		}
 	}
 	
-	public List<FileItem> getFileItems() {
-		return new ArrayList<FileItem>(escapedParametersFileItemsMap.values());
-	}
+	private void writeFile(FileItemStream fileItem, BufferedOutputStream bos, byte[] boundary) throws Exception {
+		bos.write(FIELD_SEPARATOR);
+		if (fileItem.isFormField()) {
+			bos.write(("Content-Disposition: form-data; name=\"" + fileItem.getFieldName() + "\"".getBytes()).getBytes());
+			bos.write(HEADER_SEPARATOR);
+			
+			String data = InjectedRejectorUtils.invokeAll(url, fileItem.getFieldName(), Streams.asString(fileItem.openStream(), charset));//增加新值
+			if (data != null) {
+				bos.write(data.getBytes());
+			}
+			
+			escapedParametersValuesMap.put(fileItem.getFieldName(), new String[] { data });
+		} else {
+			InputStream is = fileItem.openStream();
+			//System.out.println("fileSize: " + is.available());
+			checkFile(fileItem, is.available());
 
-	public FileItem getFileItem(String fieldName) {
-		return escapedParametersFileItemsMap.get(fieldName);
+			String data = InjectedRejectorUtils.invokeAll(url, fileItem.getFieldName(), fileItem.getName());
+			bos.write(("Content-Disposition: form-data; name=\"" + fileItem.getFieldName() + "\"; filename=\"" + data + "\"").getBytes());
+			bos.write(FIELD_SEPARATOR);
+			bos.write(("Content-Type: " + fileItem.getContentType()).getBytes());
+			bos.write(HEADER_SEPARATOR);
+			bos.write(readInputStreamBytes(is));
+			//bos.write(IOUtils.toByteArray(is));
+		}
+		bos.write(FIELD_SEPARATOR);
+		bos.write("--".getBytes());
+		
+		bos.write(boundary);
 	}
 	
-	private void checkFile(FileItem fileItem) throws RuntimeException {
+	private void checkFile(FileItemStream fileItem, int size) throws RuntimeException {
 		String fileName = fileItem.getName();
 		if (fileName != null) {
 			
@@ -148,7 +151,6 @@ public class FileHttpRequestWrapper extends TextHttpRequestWrapper {
 			}
 		}
 
-		long size = fileItem.getSize();
 		logger.debug("fileSize: {}, maxFileSize: {}", size, maxFileSize);
 		if (FilterConfiguration.getInstance().isCheckFileSize(url) && (this.maxFileSize != null) && size > this.maxFileSize.longValue()) {
 			throw new RuntimeException("请确认上传的文件小于" + (maxFileSize.longValue() / MB) + "M");
@@ -158,21 +160,20 @@ public class FileHttpRequestWrapper extends TextHttpRequestWrapper {
 	@Override
 	public ServletInputStream getInputStream() throws IOException {
 		if (this.tmpFile == null) {
-			return request.getInputStream();
+			return new FileServletInputStream(isBytes);
 		}
-		
-		byte[] streamBytes = readInputStreamBytes(new FileInputStream(this.tmpFile));
-		return new FileServletInputStream(streamBytes);
+		return new FileServletInputStream(readInputStreamBytes(new FileInputStream(this.tmpFile)));
 	}
-	
+
 	private File createTmpFile() {
 		File tempDir = new File(System.getProperty("java.io.tmpdir"));
 		String tempFileName = "upload_" + UUID.randomUUID().toString() + ".tmp";
 		File tempFile = new File(tempDir, tempFileName);
+		System.out.println("tmp file path: " + tempFile.getAbsolutePath());
 		return tempFile;
 	}
 	
-	private void transformTmpFile(List<FileItem> list) throws Exception {
+	private void transformTmpFile(FileItemIterator iter) throws Exception {
 		byte[] boundary = getBoundary(getContentType());
 		
 		this.tmpFile = createTmpFile();
@@ -184,8 +185,9 @@ public class FileHttpRequestWrapper extends TextHttpRequestWrapper {
 			bos.write("--".getBytes());
 			bos.write(boundary);
 			
-			for (FileItem fileItem : list) {
-				writeFile(fileItem, bos, boundary);
+			while (iter.hasNext()) {
+				FileItemStream item = iter.next();// 获取文件流
+				writeFile(item, bos, boundary);
 			}
 		} catch (Exception e) {
 			logger.error("保存临时文件异常：", e);
@@ -210,36 +212,6 @@ public class FileHttpRequestWrapper extends TextHttpRequestWrapper {
 		}
 	}
 	
-	private void writeFile(FileItem fileItem, BufferedOutputStream bos, byte[] boundary) throws Exception {
-		bos.write(FIELD_SEPARATOR);
-		if (fileItem.isFormField()) {
-			bos.write(("Content-Disposition: form-data; name=\"" + fileItem.getFieldName() + "\"".getBytes()).getBytes());
-			bos.write(HEADER_SEPARATOR);
-			
-			String data = InjectedRejectorUtils.invokeAll(url, fileItem.getFieldName(), fileItem.getString(this.charset));
-			if (data != null) {
-				bos.write(data.getBytes());
-			}
-			
-			escapedParametersValuesMap.put(fileItem.getFieldName(), new String[] { data });
-		} else {
-			checkFile(fileItem);
-
-			String data = InjectedRejectorUtils.invokeAll(url, fileItem.getFieldName(), fileItem.getName());
-			bos.write(("Content-Disposition: form-data; name=\"" + fileItem.getFieldName() + "\"; filename=\"" + data + "\"").getBytes());
-			bos.write(FIELD_SEPARATOR);
-			bos.write(("Content-Type: " + fileItem.getContentType()).getBytes());
-			bos.write(HEADER_SEPARATOR);
-			bos.write(readInputStreamBytes(fileItem.getInputStream()));
-			
-			escapedParametersFileItemsMap.put(fileItem.getFieldName(), fileItem);
-		}
-		bos.write(FIELD_SEPARATOR);
-		bos.write("--".getBytes());
-		
-		bos.write(boundary);
-	}
-
 	private byte[] getBoundary(String contentType) {
 		ParameterParser parser = new ParameterParser();
 		parser.setLowerCaseNames(true);
@@ -261,24 +233,30 @@ public class FileHttpRequestWrapper extends TextHttpRequestWrapper {
 		return boundary;
 	}
 
-	private byte[] readInputStreamBytes(InputStream is) {
+	private byte[] readInputStreamBytes(InputStream is) throws IOException {
 		ByteArrayOutputStream baos = new ByteArrayOutputStream();
+		BufferedInputStream bis = new BufferedInputStream(is);
 		
 		byte[] buff = new byte[1024];
 		int len = 0;
 		byte[] in2b = null;
 		try {
-			while ((len = is.read(buff)) > 0) {
+			while ((len = bis.read(buff)) > 0) {
 				baos.write(buff, 0, len);
 			}
 		} catch (IOException e) {
 			logger.error("Failed to read multipart stream.", e);
+			throw e;
 		} finally {
 			try {
 				in2b = baos.toByteArray();
 				if (baos != null) {
 					baos.close();
 					baos = null;
+				}
+				if (bis != null) {
+					bis.close();
+					bis = null;
 				}
 			} catch (IOException e) {
 				logger.error("Failed to close multipart stream.", e);

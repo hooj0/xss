@@ -14,6 +14,7 @@ import org.slf4j.LoggerFactory;
  */
 public abstract class ApplicationLogging {
 
+	
     protected final Logger logger;
 
     public ApplicationLogging() {

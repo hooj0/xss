@@ -141,19 +141,24 @@ public class FilterConfiguration extends AbstractResourceStreamLoader implements
 	public Map<String, List<String>> getMapProp(String propertyName) throws RuntimeException {
 		try {
 			Object data = filterPropertyLoader.getObjectProp(propertyName);
+			if (data == null) {
+				return null;
+			}
 			if (data instanceof Map) {
 				return (Map<String, List<String>>) data;
 			}
-			throw new RuntimeException("FilterConfiguration for " + propertyName + " has incorrect type");
+			return null;
 		} catch (RuntimeException ex) {
-			throw new RuntimeException("FilterConfiguration for " + propertyName + " has incorrect type");
+			return null;
 		}
 	}
 	
 	public boolean isExcludeProp(String propertyName) throws RuntimeException {
 		try {
 			try {
-				this.getMapProp(propertyName);
+				if (this.getMapProp(propertyName) == null) {
+					return false;
+				}
 				
 				List<String> filters = this.getFilterProp(propertyName);
 				List<String> excludes = this.getExcludeProp(propertyName);
@@ -168,7 +173,7 @@ public class FilterConfiguration extends AbstractResourceStreamLoader implements
 				} 
 				return false;
 			} catch (Exception e) {
-				return true;
+				return false;
 			}
 		} catch (RuntimeException ex) {
 			throw new RuntimeException("FilterConfiguration for " + propertyName + " has incorrect type");
@@ -179,7 +184,7 @@ public class FilterConfiguration extends AbstractResourceStreamLoader implements
 		try {
 			return this.getMapProp(propertyName).get("filter");
 		} catch (RuntimeException ex) {
-			throw new RuntimeException("FilterConfiguration for " + propertyName + ".filter has incorrect type");
+			return null;
 		}
 	}
 	
@@ -187,7 +192,7 @@ public class FilterConfiguration extends AbstractResourceStreamLoader implements
 		try {
 			return this.getMapProp(propertyName).get("include");
 		} catch (RuntimeException ex) {
-			throw new RuntimeException("FilterConfiguration for " + propertyName + ".include has incorrect type");
+			return null;
 		}
 	}
 	
@@ -195,7 +200,7 @@ public class FilterConfiguration extends AbstractResourceStreamLoader implements
 		try {
 			return this.getMapProp(propertyName).get("exclude");
 		} catch (RuntimeException ex) {
-			throw new RuntimeException("FilterConfiguration for " + propertyName + ".exclude has incorrect type");
+			return null;
 		}
 	}
 	
@@ -203,7 +208,7 @@ public class FilterConfiguration extends AbstractResourceStreamLoader implements
 		try {
 			return this.getMapProp(propertyName).get("check");
 		} catch (RuntimeException ex) {
-			throw new RuntimeException("FilterConfiguration for " + propertyName + ".exclude has incorrect type");
+			return null;
 		}
 	}
 	

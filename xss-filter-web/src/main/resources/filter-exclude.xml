@@ -21,6 +21,16 @@
 		<!-- 直接放行指定url -->
 		<exclude url="masget/pay/unionpay.do" />
 		
-		<exclude url="masget/pay/alipay_upload.do" filter="js,sql,html" check-size="true" check-type=""/>
+		<exclude url="masget/pay/alipay_upload.do" filter="js,sql,html" check-size="true" check-type="false"/>
+
+		<exclude url="/chehuotongweb/xss/example/whitelist/submit" />
+		
+		<exclude url="/chehuotongweb/xss/example/form/submit">
+			<exclude-param>remark</exclude-param>
+		</exclude>
+		
+		<exclude url="/chehuotongweb/xss/example/upload/submit2" />
+
+		<exclude url="/chehuotongweb/xss/example/**" filter="js,html"/>
 	</filter-excludes>
 </root>

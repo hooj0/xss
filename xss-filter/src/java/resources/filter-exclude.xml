@@ -3,13 +3,20 @@
 	<filter-excludes>
 		<!-- 排除过滤URL或param参数 -->
 		<!-- url 代表排除拦截过滤URL -->
+		<!-- url 支持通配符
+			The mapping matches URLs using the following rules:
+				? matches one character 
+				* matches zero or more characters 
+				** matches zero or more 'directories' in a path 
+		-->
 		<!-- filter 代表拦截过滤的方式：js,sql,html,css -->
+		<!-- check-size 检查上传文件大小  check-type 检查上传文件类型 -->
 		<!-- exclude-param 过滤白名单：代表拦截过滤接口不过滤的字符串参数 -->
 		<!-- include-param 过滤黑名单：代表拦截过滤接口过滤的字符串参数 -->
 		
 		
 		<!-- 对当前url的参数userName、password过滤js,sql,html,css 操作 -->
-		<exclude url="masget/pay/weixin.do" filter="js,sql,html,css">
+		<exclude url="masget/pay/weixin.do" filter="html">
 			<exclude-param>userName</exclude-param>
 			<exclude-param>password</exclude-param>
 			<include-param>remark</include-param>
@@ -22,5 +29,8 @@
 		<exclude url="masget/pay/unionpay.do" />
 		
 		<exclude url="masget/pay/alipay_upload.do" filter="js,sql,html" check-size="true" check-type=""/>
+		
+		<!-- 所有/chehuotongweb/xss/example/开头的都执行此过滤配置 -->
+		<exclude url="/chehuotongweb/xss/example/**" filter="js,file" check-size="false" check-type="false"/>
 	</filter-excludes>
 </root>

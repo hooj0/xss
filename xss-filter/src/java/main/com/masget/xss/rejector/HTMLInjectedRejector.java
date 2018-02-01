@@ -1,6 +1,6 @@
 package com.masget.xss.rejector;
 
-import org.owasp.esapi.ESAPI;
+import org.apache.commons.lang.StringUtils;
 
 /**
  * html 过滤处理
@@ -14,6 +14,9 @@ import org.owasp.esapi.ESAPI;
  * @version 1.0
  */
 public class HTMLInjectedRejector extends AbstractInjectedRejector {
+
+	private static final String[] KEYWORDS = { "<", ">", "\'",  "\"", "\\(", "\\)" }; 
+	private static final String[] REPLACE_WORDS = { "&lt;", "&gt;", "&#39;", "&quot;", "&#40;", "&#41;" }; 
 
 	private HTMLInjectedRejector() {
 		super("html");
@@ -37,10 +40,9 @@ public class HTMLInjectedRejector extends AbstractInjectedRejector {
 		));
 		*/
 		
-		String result = ESAPI.encoder().canonicalize(target);// 注意：若前端使用get方式提交经过encodeURI的中文，此处会乱码
-		result = ESAPI.encoder().encodeForHTML(target);
+		//String result = ESAPI.encoder().canonicalize(target);// 注意：若前端使用get方式提交经过encodeURI的中文，此处会乱码
+		//result = ESAPI.encoder().encodeForHTML(target); // 此方法中文会被转码
 		
-		return result;
+		return StringUtils.replaceEach(target, KEYWORDS, REPLACE_WORDS);
 	}
-
 }

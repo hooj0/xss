@@ -10,6 +10,9 @@ import javax.servlet.ServletRequest;
 import javax.servlet.ServletResponse;
 import javax.servlet.http.HttpServletRequest;
 
+import org.apache.commons.fileupload.servlet.ServletFileUpload;
+import org.springframework.util.AntPathMatcher;
+
 import com.masget.xss.configuration.FilterConfiguration;
 import com.masget.xss.log.ApplicationLogging;
 
@@ -27,8 +30,6 @@ public class XssFilter extends ApplicationLogging implements Filter {
 
 	// 文件头类型
 	private static final String MULTIPART_HEADER = "Content-type";
-	// 是否是上传文件
-	private boolean multipart;
 	
 	@Override
 	public void init(FilterConfig config) throws ServletException {
@@ -42,21 +43,45 @@ public class XssFilter extends ApplicationLogging implements Filter {
 		
 		// 白名单路径直接放行
 		if (FilterConfiguration.getInstance().isExcludeProp(url)) {
-			debug("直接放行URL：{}", url);
+			debug("“白名单”直接放行URL：{}", url);
 			chain.doFilter(request, response);
 		} else {
 			
-			// 判断是否是上传文件
-			multipart = request.getHeader(MULTIPART_HEADER) != null && request.getHeader(MULTIPART_HEADER).startsWith("multipart/form-data");
 			// 如果是上传文件
-			if (multipart) {
-				debug("“文件”过滤放行URL：{}", url);
-				chain.doFilter(new FileHttpRequestWrapper(request), response);
+			if (isMultipartRequest(request)) {
+				debug("“文件”过滤请求URL：{}", url);
+				try {
+					chain.doFilter(new FileHttpRequestWrapper(request), response);
+				} catch (Exception e) {
+					logger.error(e.getMessage(), e);
+					throw new ServletException(e.getMessage());
+				}
 			} else {
-				debug("“文本”过滤放行URL：{}", url);
+				debug("“文本”过滤请求URL：{}", url);
 				chain.doFilter(new TextHttpRequestWrapper(request), response);
 			}
 		}
+	}
+	
+	// 是否是上传文件
+	private boolean isMultipartRequest(HttpServletRequest request) {
+		
+		boolean multipart = ServletFileUpload.isMultipartContent(request);
+		if (multipart) {
+			return multipart;
+		}
+		
+		multipart = request.getHeader(MULTIPART_HEADER) != null && request.getHeader(MULTIPART_HEADER).startsWith("multipart/form-data");
+		if (multipart) {
+			return multipart;
+		}
+		
+		String contentType = request.getContentType();
+		if ((contentType != null) && (contentType.toLowerCase().startsWith("multipart/"))) {
+			multipart = true;
+		}
+
+		return multipart;
 	}
 
 	@Override
@@ -64,7 +89,7 @@ public class XssFilter extends ApplicationLogging implements Filter {
 	}
 	
 	public static void main(String[] args) {
-		System.out.println(FilterConfiguration.getInstance().isExcludeProp("masget/pay/weixin.do"));
+		/*System.out.println(FilterConfiguration.getInstance().isExcludeProp("masget/pay/weixin.do"));
 		System.out.println(FilterConfiguration.getInstance().isExcludeProp("masget/pay/alipay.do"));
 		System.out.println(FilterConfiguration.getInstance().isExcludeProp("masget/pay/unionpay.do"));
 		System.out.println(FilterConfiguration.getInstance().isExcludeProp("applepay.do"));
@@ -73,5 +98,14 @@ public class XssFilter extends ApplicationLogging implements Filter {
 		System.out.println(FilterConfiguration.getInstance().isCheckFileSize("masget/pay/applepay.do"));
 		System.out.println(FilterConfiguration.getInstance().isCheckFileSize("masget/pay/alipay_upload.do"));
 		System.out.println(FilterConfiguration.getInstance().isCheckFileType("masget/pay/alipay_upload.do"));
+		 **/
+
+		System.out.println(new AntPathMatcher().match("*/masget/*", "a/masget/pay"));
+		System.out.println(new AntPathMatcher().match("a/masget/pay", "a/masget/pay"));
+		System.out.println(new AntPathMatcher().isPattern("a/*"));
+		
+		System.out.println(FilterConfiguration.getInstance().getMapProp("/chehuotongweb/xss/example/alipay_upload.do"));
+		System.out.println(FilterConfiguration.getInstance().isCheckFileType("/chehuotongweb/xss/example/alipay_upload.do"));
+		
 	}
 }

@@ -28,7 +28,7 @@ public class TextHttpRequestWrapper extends HttpServletRequestWrapper {
 	private static final Logger logger = LoggerFactory.getLogger(TextHttpRequestWrapper.class);
 	
 	private String url;
-	private Map<String, String[]> escapedParametersValuesMap = new HashMap<String, String[]>();
+	protected Map<String, String[]> escapedParametersValuesMap = new HashMap<String, String[]>();
 
 	public TextHttpRequestWrapper(HttpServletRequest req) {
 		super(req);
@@ -63,6 +63,10 @@ public class TextHttpRequestWrapper extends HttpServletRequestWrapper {
 
 		if (escapedParameterValues == null) {
 			String[] parametersValues = super.getParameterValues(name);
+			if (parametersValues == null) {
+				return null;
+			}
+			
 			escapedParameterValues = new String[parametersValues.length];
 
 			for (int i = 0; i < parametersValues.length; i++) {
