@@ -8,7 +8,6 @@ import org.owasp.esapi.codecs.MySQLCodec.Mode;
 
 /**
  * 防止sql注入
- * 
  * @author hoojo
  * @createDate 2018年1月17日 下午4:58:52
  * @file SqlInjectedRejector.java
