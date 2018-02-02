@@ -14,7 +14,7 @@
 ```xml
 	<filter>
 		<filter-name>xss-filter</filter-name>
-		<filter-class>com.cnblogs/hoojo.xss.XssFilter</filter-class>
+		<filter-class>com.cnblogs.hoojo.xss.XssFilter</filter-class>
 	</filter>
 	<filter-mapping>
 		<filter-name>xss-filter</filter-name>
