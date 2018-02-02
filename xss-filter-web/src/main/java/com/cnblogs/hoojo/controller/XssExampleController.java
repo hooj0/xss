@@ -21,11 +21,11 @@ import org.springframework.web.multipart.MultipartFile;
 import org.springframework.web.multipart.MultipartHttpServletRequest;
 import org.springframework.web.multipart.commons.CommonsMultipartResolver;
 
-import com.masget.xss.FileHttpRequestWrapper;
-import com.masget.xss.log.ApplicationLogging;
-import com.masget.xss.wrapper.FileUploadRequestWrapper;
-import com.masget.xss.wrapper.FileUploadRequestWrapper.FileItem;
-import com.masget.xss.wrapper.FileUploadWrapper;
+import com.cnblogs.hoojo.xss.FileHttpRequestWrapper;
+import com.cnblogs.hoojo.xss.log.ApplicationLogging;
+import com.cnblogs.hoojo.xss.wrapper.FileUploadRequestWrapper;
+import com.cnblogs.hoojo.xss.wrapper.FileUploadRequestWrapper.FileItem;
+import com.cnblogs.hoojo.xss.wrapper.FileUploadWrapper;
 
 /**
  * examples xss

@@ -13,7 +13,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.multipart.MultipartFile;
 
-import com.masget.xss.log.ApplicationLogging;
+import com.cnblogs.hoojo.xss.log.ApplicationLogging;
 
 /**
  * <b>function:</b> 文件上传、导入、下载控制器

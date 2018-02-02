@@ -10,8 +10,8 @@
 </head>
 
 <body>
-	<a href="/chehuotongweb/xss/example/form">过滤文本css/js/html/sql</a><br/>
-	<a href="/chehuotongweb/xss/example/whitelist">白名单，不过滤</a><br/>
-	<a href="/chehuotongweb/xss/example/upload">文件上传</a><br/>
+	<a href="${pageContext.request.contextPath}/xss/example/form">过滤文本css/js/html/sql</a><br/>
+	<a href="${pageContext.request.contextPath}/xss/example/whitelist">白名单，不过滤</a><br/>
+	<a href="${pageContext.request.contextPath}/xss/example/upload">文件上传</a><br/>
 </body>
 </html>
