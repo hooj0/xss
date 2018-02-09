@@ -10,7 +10,6 @@ import com.cnblogs.hoojo.xss.configuration.loader.PropertyLoader;
 
 /**
  * 过滤拦截XML配置文件
- * 
  * @author hoojo
  * @createDate 2018年1月12日 下午3:44:15
  * @file FilterConfiguration.java
