@@ -17,7 +17,7 @@ import com.cnblogs.hoojo.xss.configuration.FilterConfiguration;
 import com.cnblogs.hoojo.xss.log.ApplicationLogging;
 
 /**
- * <b>function:</b> xss 过滤器，防止HTML、JavaScript、SQL、CSS 注入
+ * xss 过滤器，防止HTML、JavaScript、SQL、CSS 注入
  * 
  * @author hoojo
  * @createDate 2018年1月10日 下午4:52:24
