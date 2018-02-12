@@ -12,7 +12,7 @@ import org.slf4j.LoggerFactory;
 import com.cnblogs.hoojo.xss.rejector.InjectedRejectorUtils;
 
 /**
- * <b>function:</b> 文本过滤
+ * 文本过滤
  * 
  * @author hoojo
  * @createDate 2018年1月10日 下午4:56:15
