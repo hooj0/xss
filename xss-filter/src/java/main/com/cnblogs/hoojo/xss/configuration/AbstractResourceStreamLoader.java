@@ -13,6 +13,7 @@ import com.cnblogs.hoojo.xss.log.ApplicationLogging;
 
 /**
  * 配置文件资源加载器
+ * 
  * @author hoojo
  * @createDate 2018年1月16日 上午11:31:09
  * @file AbstractResourceStreamLoader.java
