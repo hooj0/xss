@@ -16,7 +16,7 @@ import org.springframework.web.multipart.MultipartFile;
 import com.cnblogs.hoojo.xss.log.ApplicationLogging;
 
 /**
- * <b>function:</b> 文件上传、导入、下载控制器
+ * 文件上传、导入、下载控制器
  * 
  * @author hoojo
  * @createDate 2012-10-22 下午01:14:34
