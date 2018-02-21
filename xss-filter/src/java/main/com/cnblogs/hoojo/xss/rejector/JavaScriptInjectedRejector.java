@@ -11,7 +11,6 @@ import org.apache.oro.text.regex.Util;
 
 /**
  * js 防注入处理
- * 
  * @author hoojo
  * @createDate 2018年1月17日 下午6:02:05
  * @file JavaScriptInjectedRejector.java
