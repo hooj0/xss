@@ -10,7 +10,6 @@ import com.cnblogs.hoojo.xss.configuration.loader.AbstractPrioritizedPropertyLoa
 
 /**
  * 标准的配置文件加载器实现
- * 
  * @author hoojo
  * @createDate 2018年1月12日 上午10:19:34
  * @file StandardPropertyLoader.java
