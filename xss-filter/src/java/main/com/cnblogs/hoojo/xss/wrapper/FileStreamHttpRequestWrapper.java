@@ -33,7 +33,7 @@ import com.cnblogs.hoojo.xss.configuration.PropertyConfiguration;
 import com.cnblogs.hoojo.xss.rejector.InjectedRejectorUtils;
 
 /**
- * <b>function:</b> 文件上传过滤
+ * 文件上传过滤
  * 
  * @author hoojo
  * @createDate 2018年1月10日 下午4:56:15
