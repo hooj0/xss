@@ -2,13 +2,13 @@
 
 [TOC]
 
-##1、简介
+## 1、简介
 `xss-filter` 是一个`JavaWeb`工程下的过滤器，可以拦截request参数列表中的特殊字符串，如：`js`、`css`、`html`、`sql`等特殊字符，防止恶意提交代码给系统造成影响故障。
 
 
 
-##2、基本配置
-###2.1、web.xml 配置
+## 2、基本配置
+### 2.1、web.xml 配置
 > 找到系统web工程下的`web.xml`，在`web.xml`中加入如下配置
 
 ```xml
@@ -23,7 +23,7 @@
 ```
 > 其中`<url-pattern>/*</url-pattern>`是拦截所有的`url`,这里可以灵活配置，根据业务的需要拦截需要拦截的`URL`。如：拦截`*.do`,`*.mvc`,`/mvc/web/*`具体的配置需要根据业务本身来做。
 
-###2.2、xss.properties 配置
+### 2.2、xss.properties 配置
 
 > `xss.properties`一般放在classpath路径下，位于目录：`src/java/resources` 该文件是一些全局配置数据
 
@@ -175,7 +175,7 @@ file.allowed.type=.zip,.rar,.doc,.docx,.xls,.xlsx,.ppt,.pptx,.gif,.jpeg,.jpg,.pd
 
 
 
-####4、配置示例：对某些特定参数放行
+#### 4、配置示例：对某些特定参数放行
 
 > 只对某些特定的参数进行过滤，如一个接口参数很多，但有那么几个参数需要特定过滤下。而其他参数不需要。
 
