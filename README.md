@@ -14,7 +14,7 @@
 ```xml
 	<filter>
 		<filter-name>xss-filter</filter-name>
-		<filter-class>com.masget.xss.XssFilter</filter-class>
+		<filter-class>com.xxx.xss.XssFilter</filter-class>
 	</filter>
 	<filter-mapping>
 		<filter-name>xss-filter</filter-name>
@@ -77,22 +77,22 @@ file.allowed.type=.zip,.rar,.doc,.docx,.xls,.xlsx,.ppt,.pptx,.gif,.jpeg,.jpg,.pd
 		
 		
 		<!-- 对当前url的参数userName、password过滤js,sql,html,css 操作 -->
-		<exclude url="masget/pay/weixin.do" filter="html">
+		<exclude url="xxx/abc/weixin.do" filter="html">
 			<exclude-param>userName</exclude-param>
 			<exclude-param>password</exclude-param>
 			<include-param>remark</include-param>
 		</exclude>
 		
 		<!-- 对当前url过滤js,sql,html 操作 -->
-		<exclude url="masget/pay/alipay.do" filter="js,sql,html"/>
+		<exclude url="xxx/abc/alipay.do" filter="js,sql,html"/>
 		
 		<!-- 直接放行指定url -->
-		<exclude url="masget/pay/unionpay.do" />
+		<exclude url="xxx/abc/unionpay.do" />
 		
-		<exclude url="masget/pay/alipay_upload.do" filter="js,sql,html" check-size="true" check-type=""/>
+		<exclude url="xxx/abc/alipay_upload.do" filter="js,sql,html" check-size="true" check-type=""/>
 		
-		<!-- 所有/chehuotongweb/xss/example/开头的都执行此过滤配置 -->
-		<exclude url="/chehuotongweb/xss/example/**" filter="js,file" check-size="false" check-type="false"/>
+		<!-- 所有/abc/xss/example/开头的都执行此过滤配置 -->
+		<exclude url="/abc/xss/example/**" filter="js,file" check-size="false" check-type="false"/>
 	</filter-excludes>
 </root>
 ```
@@ -130,7 +130,7 @@ file.allowed.type=.zip,.rar,.doc,.docx,.xls,.xlsx,.ppt,.pptx,.gif,.jpeg,.jpg,.pd
 
 ```xml
 <!-- 直接放行指定url -->
-<exclude url="masget/pay/unionpay.do" />
+<exclude url="xxx/abc/unionpay.do" />
 ```
 
 
@@ -143,13 +143,13 @@ file.allowed.type=.zip,.rar,.doc,.docx,.xls,.xlsx,.ppt,.pptx,.gif,.jpeg,.jpg,.pd
 
 ```xml
 <!-- 对当前url过滤js,sql,html 操作 -->
-<exclude url="masget/pay/alipay.do" filter="js,sql,html"/>
+<exclude url="xxx/abc/alipay.do" filter="js,sql,html"/>
 
 <!-- 对当前url过滤html 操作 -->
-<exclude url="masget/pay/alipay.do" filter="html"/>
+<exclude url="xxx/abc/alipay.do" filter="html"/>
 
 <!-- 对当前url过滤sql 操作 -->
-<exclude url="masget/pay/alipay.do" filter="sql"/>
+<exclude url="xxx/abc/alipay.do" filter="sql"/>
 ```
 
 
@@ -162,12 +162,12 @@ file.allowed.type=.zip,.rar,.doc,.docx,.xls,.xlsx,.ppt,.pptx,.gif,.jpeg,.jpg,.pd
 
 ```xml
 <!-- 对当前url的参数name过滤js,sql,html 操作 -->
-<exclude url="masget/pay/weixin.do" filter="js,sql,html">  
+<exclude url="xxx/abc/weixin.do" filter="js,sql,html">  
   <include-param>name</include-param>
 </exclude>
 
 <!-- 对当前url的参数name、remark 过滤所有filter 操作 -->
-<exclude url="masget/pay/weixin.do">  
+<exclude url="xxx/abc/weixin.do">  
   <include-param>name</include-param>
   <include-param>remark</include-param>
 </exclude>
@@ -183,12 +183,12 @@ file.allowed.type=.zip,.rar,.doc,.docx,.xls,.xlsx,.ppt,.pptx,.gif,.jpeg,.jpg,.pd
 
 ```xml
 <!-- 对当前url的参数name 不做任何过滤，其他参数执行配置的filter操作 -->
-<exclude url="masget/pay/weixin.do" filter="js,sql,html">  
+<exclude url="xxx/abc/weixin.do" filter="js,sql,html">  
   <exclude-param>name</exclude-param>
 </exclude>
 
 <!-- 对当前url的参数name、remark 不做过滤操作，其他参数执行所有filter操作 -->
-<exclude url="masget/pay/weixin.do">  
+<exclude url="xxx/abc/weixin.do">  
   <exclude-param>name</exclude-param>
   <exclude-param>remark</exclude-param>
 </exclude>
@@ -204,9 +204,9 @@ file.allowed.type=.zip,.rar,.doc,.docx,.xls,.xlsx,.ppt,.pptx,.gif,.jpeg,.jpg,.pd
 
 ```xml
 <!-- 检查上传文件大小（对文件名和其他参数进行 js,sql,html filter的过滤处理 ），不检查上传文件类型 -->
-<exclude url="masget/pay/alipay_upload.do" filter="js,sql,html" check-size="true" check-type="false"/>
+<exclude url="xxx/abc/alipay_upload.do" filter="js,sql,html" check-size="true" check-type="false"/>
 		
-<!-- 所有/chehuotongweb/xss/example/开头的都执行此过滤配置 -->
-<exclude url="/chehuotongweb/xss/example/**" filter="js,file" check-size="false" check-type="false"/>
+<!-- 所有/abc/xss/example/开头的都执行此过滤配置 -->
+<exclude url="/abc/xss/example/**" filter="js,file" check-size="false" check-type="false"/>
 ```
 
